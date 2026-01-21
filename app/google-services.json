@@ -12,7 +12,20 @@
           "package_name": "com.menonisebastian.chucknorrisapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "614702053075-8l6bdij0vhg5ujccss7ejfu4l6hafb03.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.menonisebastian.chucknorrisapp",
+            "certificate_hash": "cae5ba8e932e535df407181b0557c3c0552ba5ab"
+          }
+        },
+        {
+          "client_id": "614702053075-gap3tlutjscm10q8dit80cq38rq54fln.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAwpQhXgM8F_a7JhHiuXqC42_aC8TiQ7F0"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "614702053075-gap3tlutjscm10q8dit80cq38rq54fln.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
