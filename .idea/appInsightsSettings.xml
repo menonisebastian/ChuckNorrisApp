@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.menonisebastian.chucknorrisapp" />
+                  <option name="mobileSdkAppId" value="1:614702053075:android:6fd5109fb047876c1d0626" />
+                  <option name="projectId" value="chucknorrisapp-1ab37" />
+                  <option name="projectNumber" value="614702053075" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
