@@ -1,4 +1,4 @@
-package com.menonisebastian.chucknorrisapp.data.repository;
+package com.menonisebastian.chucknorrisapp.data.repository
 
-public class Repo {
+class Repo {
 }
