@@ -10,9 +10,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -77,18 +79,19 @@ fun HomeScreen(viewModel: MainViewModel) {
                 }
             },
             confirmButton = {
-                Button(
+                IconButton(
                     onClick = { showDialog = false },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    colors = IconButtonDefaults.iconButtonColors(MaterialTheme.colorScheme.primary)
                 ) {
-                    Text("Cerrar")
+                    Icon(imageVector = Icons.Default.Close, contentDescription = "Cerrar", tint = Color.White)
                 }
             },
             dismissButton = {
-                OutlinedButton(
-                    onClick = { viewModel.fetchJoke() }
+                IconButton(
+                    onClick = { viewModel.fetchJoke() },
+                    colors = IconButtonDefaults.iconButtonColors(MaterialTheme.colorScheme.secondary)
                 ) {
-                    Text("Otro")
+                    Icon(imageVector = Icons.Default.Refresh, contentDescription = "Actualizar", tint = Color.White)
                 }
             },
             containerColor = MaterialTheme.colorScheme.background,
@@ -364,7 +367,7 @@ fun FavoriteItem(joke: Joke, onDelete: () -> Unit) {
                 style = MaterialTheme.typography.bodyMedium,
             )
             IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Favorite, contentDescription = "Eliminar", tint = AppColors.Orange)
+                Icon(Icons.Default.Favorite, contentDescription = "Eliminar", tint = Color.Red)
             }
         }
     }
