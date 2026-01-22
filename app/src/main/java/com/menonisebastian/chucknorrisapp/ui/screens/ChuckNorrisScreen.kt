@@ -45,7 +45,7 @@ fun HomeScreen(viewModel: MainViewModel) {
             onDismissRequest = { showDialog = false },
             title = {
 
-                Column () {
+                Column {
                     Text(
                         text = "Chiste Aleatorio",
                         style = MaterialTheme.typography.titleLarge,
