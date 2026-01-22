@@ -14,7 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 private val DarkColorScheme = darkColorScheme(
     primary = Orange,
     secondary = Blue,
-   tertiary = Gray,
+    tertiary = Gray,
     primaryContainer = DarkBlue,
     secondaryContainer = DarkOrange,
     inversePrimary = DarkGray,
