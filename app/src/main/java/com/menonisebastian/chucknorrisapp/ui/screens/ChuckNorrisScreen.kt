@@ -50,7 +50,8 @@ fun HomeScreen(viewModel: MainViewModel) {
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
-                    Text("Categoria: ${categoriaActual?.replaceFirstChar { it.uppercase() } ?: "Random"}", fontSize = MaterialTheme.typography.bodySmall.fontSize)
+                    Text("Categoria: ${categoriaActual?.replaceFirstChar { it.uppercase() } ?: "Random"}",
+                        fontSize = MaterialTheme.typography.bodySmall.fontSize)
                 }
             },
             text = {
