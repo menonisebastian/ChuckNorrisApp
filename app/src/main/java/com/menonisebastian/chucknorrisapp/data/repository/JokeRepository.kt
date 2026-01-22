@@ -5,7 +5,6 @@ import com.menonisebastian.chucknorrisapp.data.model.Joke
 import com.menonisebastian.chucknorrisapp.data.network.ChuckNorrisApiService
 import com.menonisebastian.chucknorrisapp.data.remote.FirestoreDataSource
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 
 class JokeRepository(
     private val api: ChuckNorrisApiService,
