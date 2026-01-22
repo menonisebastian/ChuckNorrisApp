@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -34,10 +33,8 @@ import com.menonisebastian.chucknorrisapp.R
 @Composable
 fun HomeScreen(viewModel: MainViewModel) {
     var selectedTab by remember { mutableIntStateOf(0) } // 0: Inicio, 1: Favoritos
-
-    // --- ESTADOS PARA EL FAB Y DIÁLOGO ---
     var showDialog by remember { mutableStateOf(false) }
-    // Observamos el chiste "actual" (individual) que genera el ViewModel
+
     val currentRandomJoke by viewModel.currentJoke.collectAsState()
     val categoriaActual by viewModel.selectedCategory.collectAsState()
 
@@ -64,7 +61,7 @@ fun HomeScreen(viewModel: MainViewModel) {
                             style = MaterialTheme.typography.bodyLarge,
                             textAlign = TextAlign.Center
                         )
-                        // Botón de favorito dentro del diálogo (Opcional)
+                        // Botón de favorito dentro del diálogo
                         IconButton(onClick = { viewModel.toggleFavorite(currentRandomJoke!!) }) {
                             Icon(
                                 imageVector = if (currentRandomJoke!!.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
@@ -140,13 +137,13 @@ fun HomeScreen(viewModel: MainViewModel) {
             }
         }
     ) { paddingValues ->
-        // Columna principal que contiene la CABECERA FIJA y el CONTENIDO VARIABLE
+        // Columna principal
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // --- CABECERA COMPARTIDA (LOGO) ---
+            // --- LOGO ---
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -160,7 +157,7 @@ fun HomeScreen(viewModel: MainViewModel) {
                 )
             }
 
-            // --- CONTENIDO VARIABLE ---
+            // --- VENTANAS ---
             Box(
                 modifier = Modifier
                     .weight(1f)
