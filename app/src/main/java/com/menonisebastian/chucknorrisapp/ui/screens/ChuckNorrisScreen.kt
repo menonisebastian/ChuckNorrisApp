@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,9 +33,86 @@ import com.menonisebastian.chucknorrisapp.ui.theme.AppColors
 fun HomeScreen(viewModel: MainViewModel) {
     var selectedTab by remember { mutableIntStateOf(0) } // 0: Inicio, 1: Favoritos
 
+    // --- ESTADOS PARA EL FAB Y DIÁLOGO ---
+    var showDialog by remember { mutableStateOf(false) }
+    // Observamos el chiste "actual" (individual) que genera el ViewModel
+    val currentRandomJoke by viewModel.currentJoke.collectAsState()
+    val categoriaActual by viewModel.selectedCategory.collectAsState()
+
+    // --- DIÁLOGO DE CHISTE ALEATORIO ---
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = {
+
+                Column () {
+                    Text(
+                        text = "Chiste Aleatorio",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text("Categoria: ${categoriaActual?.replaceFirstChar { it.uppercase() } ?: "Random"}", fontSize = MaterialTheme.typography.bodySmall.fontSize)
+                }
+            },
+            text = {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    if (currentRandomJoke != null) {
+                        Text(
+                            text = currentRandomJoke!!.value,
+                            style = MaterialTheme.typography.bodyLarge,
+                            textAlign = TextAlign.Center
+                        )
+                        // Botón de favorito dentro del diálogo (Opcional)
+                        IconButton(onClick = { viewModel.toggleFavorite(currentRandomJoke!!) }) {
+                            Icon(
+                                imageVector = if (currentRandomJoke!!.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                contentDescription = "Favorito",
+                                tint = if (currentRandomJoke!!.isFavorite) Color.Red else Color.Gray
+                            )
+                        }
+                    } else {
+                        CircularProgressIndicator()
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = { showDialog = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = AppColors.Orange)
+                ) {
+                    Text("Cerrar")
+                }
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = { viewModel.fetchJoke() }
+                ) {
+                    Text("Otro")
+                }
+            },
+            containerColor = AppColors.White
+        )
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
+        // --- AQUÍ AÑADIMOS EL FAB ---
+        floatingActionButton = {
+            // Solo mostramos el botón si estamos en la pestaña 0 (Categorías)
+            if (selectedTab == 0) {
+                FloatingActionButton(
+                    onClick = {
+                        viewModel.fetchJoke() // Llama a la función para traer un chiste nuevo
+                        showDialog = true     // Muestra el diálogo
+                    },
+                    containerColor = AppColors.Orange,
+                    contentColor = Color.White
+                ) {
+                    Icon(Icons.Default.Shuffle, contentDescription = "Chiste Random")
+                }
+            }
+        },
         bottomBar = {
             NavigationBar(
                 containerColor = AppColors.White
@@ -54,19 +132,19 @@ fun HomeScreen(viewModel: MainViewModel) {
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
                     colors = NavigationBarItemDefaults.colors(
-                        indicatorColor = AppColors.SoftOrange
+                        indicatorColor = AppColors.SoftBlue
                     )
                 )
             }
         }
     ) { paddingValues ->
-
+        // Columna principal que contiene la CABECERA FIJA y el CONTENIDO VARIABLE
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // --- (LOGO) ---
+            // --- CABECERA COMPARTIDA (LOGO) ---
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -81,7 +159,6 @@ fun HomeScreen(viewModel: MainViewModel) {
             }
 
             // --- CONTENIDO VARIABLE ---
-            // Usamos weight(1f) para que el contenido ocupe todo el espacio restante debajo del logo
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -181,7 +258,7 @@ fun SearchScreenContent(viewModel: MainViewModel) {
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 16.dp)
+            contentPadding = PaddingValues(bottom = 80.dp) // Extra padding para que el FAB no tape el último item
         ) {
             if (categoryJokes.isEmpty() && !isLoading) {
                 item {
@@ -208,7 +285,7 @@ fun FavoritesScreenContent(viewModel: MainViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp) // Padding lateral
+            .padding(horizontal = 16.dp)
     ) {
         Text(
             text = "Mis Favoritos (${favorites.size})",

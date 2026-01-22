@@ -11,19 +11,32 @@ class JokeRepository(
     private val dao: JokeDao,
     private val firestore: FirestoreDataSource
 ) {
+    // Flujo de favoritos desde Room (Fuente de verdad local)
     val favoriteJokes: Flow<List<Joke>> = dao.getFavoriteJokes()
 
-    suspend fun getCategories(): List<String> = api.getCategories()
+    suspend fun getCategories(): List<String> {
+        return api.getCategories()
+    }
 
-    // Búsqueda de chistes por texto (categoría)
+    // Obtener un chiste aleatorio (opcionalmente filtrado por categoría)
+    suspend fun getRandomJoke(category: String?): Joke {
+        // 1. Llamada a la API
+        val joke = api.getRandomJoke(category)
+
+        // 2. IMPORTANTE: Verificar si ya existe en favoritos localmente
+        // Esto asegura que si sale un chiste que ya guardaste, el corazón salga rojo
+        joke.isFavorite = dao.isFavorite(joke.id)
+
+        return joke
+    }
+
+    // Búsqueda de chistes por texto/categoría (Para la lista principal)
     suspend fun searchJokesByCategory(category: String): List<Joke> {
         return try {
             val response = api.searchJokes(category)
             val jokes = response.result
 
-            // Verificamos cuáles de estos ya están en favoritos
-            // Nota: Para optimizar en listas grandes, idealmente haríamos una query "WHERE id IN (...)"
-            // pero para este ejemplo iteramos.
+            // Verificamos estado de favorito para cada item de la lista
             jokes.forEach { joke ->
                 joke.isFavorite = dao.isFavorite(joke.id)
             }
@@ -35,9 +48,11 @@ class JokeRepository(
 
     suspend fun toggleFavorite(joke: Joke) {
         if (joke.isFavorite) {
+            // Eliminar de Room y Firestore
             dao.deleteFavorite(joke)
             firestore.removeFavorite(joke.id)
         } else {
+            // Guardar en Room y Firestore
             val jokeToSave = joke.copy(isFavorite = true)
             dao.insertFavorite(jokeToSave)
             firestore.saveFavorite(jokeToSave)
