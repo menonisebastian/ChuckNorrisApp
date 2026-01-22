@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -97,7 +98,6 @@ fun HomeScreen(viewModel: MainViewModel) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
-        // --- AQUÍ AÑADIMOS EL FAB ---
         floatingActionButton = {
             // Solo mostramos el botón si estamos en la pestaña 0 (Categorías)
             if (selectedTab == 0) {
@@ -109,7 +109,7 @@ fun HomeScreen(viewModel: MainViewModel) {
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ) {
-                    Icon(Icons.Default.Shuffle, contentDescription = "Chiste Random")
+                    Icon(Icons.Default.Shuffle, contentDescription = "Chiste Random", tint = Color.White)
                 }
             }
         },
@@ -118,7 +118,7 @@ fun HomeScreen(viewModel: MainViewModel) {
                 containerColor = MaterialTheme.colorScheme.background,
             ) {
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.Category, contentDescription = "Inicio") },
+                    icon = { Icon(Icons.Default.FilterList, contentDescription = "Inicio") },
                     label = { Text("Categorías") },
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
@@ -294,11 +294,9 @@ fun FavoritesScreenContent(viewModel: MainViewModel) {
             color = MaterialTheme.colorScheme.onBackground
         )
 
-        HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
-
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 16.dp)
+            contentPadding = PaddingValues(vertical = 16.dp)
         ) {
             if (favorites.isEmpty()) {
                 item {
