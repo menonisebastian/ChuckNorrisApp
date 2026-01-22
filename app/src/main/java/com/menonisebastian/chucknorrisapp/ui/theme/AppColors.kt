@@ -16,4 +16,6 @@ object AppColors {
 
     val SoftGray = Color(0xFFB1B1B1)
     val SoftWhite = Color(0xFFF8F8F8)
+    val SoftBlue = Color(0xFFC8E4FA)
+    val SoftOrange = Color(0xFFFFD2C4)
 }

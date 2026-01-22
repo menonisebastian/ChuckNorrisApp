@@ -9,173 +9,235 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.menonisebastian.chucknorrisapp.data.model.Joke
 import com.menonisebastian.chucknorrisapp.ui.MainViewModel
 import com.menonisebastian.chucknorrisapp.R
+import com.menonisebastian.chucknorrisapp.ui.theme.AppColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: MainViewModel) {
-    val categories by viewModel.categories.collectAsState()
-    val selectedCategory by viewModel.selectedCategory.collectAsState()
-    val categoryJokes by viewModel.categoryJokes.collectAsState()
-    val favorites by viewModel.favorites.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-
-    var expanded by remember { mutableStateOf(false) }
+    var selectedTab by remember { mutableIntStateOf(0) } // 0: Inicio, 1: Favoritos
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Image(painter = painterResource(id = R.drawable.logolarge),
-                    modifier = Modifier
-                        .width(100.dp)
-                        .padding(vertical = 20.dp),
-                    contentDescription = "logo texto") },
-//                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-//                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-//                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-//                )
-            )
+        containerColor = MaterialTheme.colorScheme.background,
+        bottomBar = {
+            NavigationBar(
+                containerColor = AppColors.SoftBlue,
+                tonalElevation = 8.dp
+            ) {
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Category, contentDescription = "Inicio") },
+                    label = { Text("Categorías") },
+                    selected = selectedTab == 0,
+                    onClick = { selectedTab = 0 },
+                    colors = NavigationBarItemDefaults.colors(
+                        indicatorColor = AppColors.SoftOrange
+                    )
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Favorite, contentDescription = "Favoritos") },
+                    label = { Text("Favoritos") },
+                    selected = selectedTab == 1,
+                    onClick = { selectedTab = 1 },
+                    colors = NavigationBarItemDefaults.colors(
+                        indicatorColor = AppColors.SoftOrange
+                    )
+                )
+            }
         }
     ) { paddingValues ->
-
-        // Usamos una única LazyColumn para manejar todo el contenido scrolleable
-        LazyColumn(
+        // Columna principal que contiene la CABECERA FIJA y el CONTENIDO VARIABLE
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 16.dp),
+        ) {
+            // --- CABECERA COMPARTIDA (LOGO) ---
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp), // Padding unificado para la cabecera
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.logolarge),
+                    contentDescription = "Logo Chuck Norris",
+                    modifier = Modifier.width(150.dp)
+                )
+            }
+
+            // --- CONTENIDO VARIABLE ---
+            // Usamos weight(1f) para que el contenido ocupe todo el espacio restante debajo del logo
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+            ) {
+                when (selectedTab) {
+                    0 -> SearchScreenContent(viewModel)
+                    1 -> FavoritesScreenContent(viewModel)
+                }
+            }
+        }
+    }
+}
+
+// --- PANTALLA 1: BÚSQUEDA Y CATEGORÍAS ---
+@Composable
+fun SearchScreenContent(viewModel: MainViewModel) {
+    val categories by viewModel.categories.collectAsState()
+    val selectedCategory by viewModel.selectedCategory.collectAsState()
+    val categoryJokes by viewModel.categoryJokes.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    var expanded by remember { mutableStateOf(false) }
+
+    // Ya no necesitamos la imagen aquí, solo el contenido específico
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp) // Padding lateral solo para el contenido
+    ) {
+        // Selector de Categoría
+        Text("Selecciona una Categoría:", style = MaterialTheme.typography.labelLarge)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Box(modifier = Modifier.fillMaxWidth()) {
+            TextField(
+                value = selectedCategory?.replaceFirstChar { it.uppercase() } ?: "Seleccionar...",
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Categoría") },
+                modifier = Modifier
+                    .clip(RoundedCornerShape(12.dp))
+                    .fillMaxWidth()
+                    .clickable { expanded = true },
+                trailingIcon = { Icon(Icons.Default.ArrowDropDown, "Drop down") },
+                shape = RoundedCornerShape(12.dp),
+                enabled = false,
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                    disabledContainerColor = AppColors.SoftBlue,
+                    disabledTextColor = AppColors.DarkBlue,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurface,
+                )
+            )
+
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clickable { expanded = true }
+                    .clip(RoundedCornerShape(12.dp)),
+            )
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.fillMaxWidth(0.9f).background(AppColors.White)
+            ) {
+                categories.forEach { category ->
+                    DropdownMenuItem(
+                        text = { Text(text = category.replaceFirstChar { it.uppercase() }) },
+                        onClick = {
+                            viewModel.selectCategory(category)
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // --- LISTA DE RESULTADOS ---
+        Text(
+            text = if (selectedCategory != null) "Resultados (${categoryJokes.size})" else "Resultados",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = AppColors.Orange
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        if (isLoading) {
+            Box(modifier = Modifier.fillMaxWidth().padding(20.dp), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        }
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
-            // --- SECCIÓN 1: SELECTOR DE CATEGORÍA ---
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text("Selecciona una Categoría:", style = MaterialTheme.typography.labelLarge)
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Box(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    OutlinedTextField(
-                        value = selectedCategory?.replaceFirstChar { it.uppercase() } ?: "Seleccionar...",
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("Categoría") },
-                        trailingIcon = {
-                            Icon(Icons.Default.ArrowDropDown, "Drop down")
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { expanded = true },
-                        shape = RoundedCornerShape(16.dp),
-                        enabled = false, // Deshabilitado para que el click lo maneje el Box
-                        colors = OutlinedTextFieldDefaults.colors(
-                            disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                            disabledBorderColor = MaterialTheme.colorScheme.outline,
-                            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+            if (categoryJokes.isEmpty() && !isLoading) {
+                item {
+                    Text(
+                        "Selecciona una categoría para ver chistes.",
+                        modifier = Modifier.padding(top = 20.dp).fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        color = Color.Gray
                     )
-                    // Capa transparente clickable para abrir el menú
-                    Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .clickable { expanded = true }
-                    )
-
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
-                        modifier = Modifier.fillMaxWidth(0.9f) // Ancho relativo al padre
-                    ) {
-                        categories.forEach { category ->
-                            DropdownMenuItem(
-                                text = { Text(text = category.replaceFirstChar { it.uppercase() }) },
-                                onClick = {
-                                    viewModel.selectCategory(category)
-                                    expanded = false
-                                }
-                            )
-                        }
-                    }
                 }
             }
-
-            // --- SECCIÓN 2: RESULTADOS DE LA CATEGORÍA ---
-            item {
-                Spacer(modifier = Modifier.height(24.dp))
-                if (isLoading) {
-                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
-                } else if (selectedCategory != null) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Resultados: ${categoryJokes.size} chistes",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-            }
-
-            // Lista de chistes de la categoría seleccionada
             items(categoryJokes) { joke ->
                 JokeItem(joke = joke, onToggleFavorite = { viewModel.toggleFavorite(joke) })
             }
+        }
+    }
+}
 
-            if (categoryJokes.isEmpty() && selectedCategory != null && !isLoading) {
-                item {
-                    Text(
-                        "No se encontraron chistes para esta categoría.",
-                        modifier = Modifier.padding(vertical = 16.dp),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            }
+// --- PANTALLA 2: FAVORITOS ---
+@Composable
+fun FavoritesScreenContent(viewModel: MainViewModel) {
+    val favorites by viewModel.favorites.collectAsState()
 
-            // --- SECCIÓN 3: FAVORITOS ---
-            item {
-                HorizontalDivider(modifier = Modifier.padding(vertical = 24.dp))
-                Text(
-                    text = "Mis Favoritos Guardados (${favorites.size})",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp) // Padding lateral
+    ) {
+        Text(
+            text = "Mis Favoritos (${favorites.size})",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            color = AppColors.DarkBlue
+        )
 
-            items(favorites) { joke ->
-                FavoriteItem(joke = joke, onDelete = { viewModel.toggleFavorite(joke) })
-            }
+        HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 16.dp)
+        ) {
             if (favorites.isEmpty()) {
                 item {
-                    Text(
-                        "Aún no tienes favoritos.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
+                    Box(modifier = Modifier.fillParentMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            "No tienes favoritos guardados aún.",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.Gray
+                        )
+                    }
                 }
+            }
+            items(favorites) { joke ->
+                FavoriteItem(joke = joke, onDelete = { viewModel.toggleFavorite(joke) })
             }
         }
     }
@@ -187,10 +249,11 @@ fun JokeItem(joke: Joke, onToggleFavorite: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        colors = CardDefaults.cardColors(containerColor = AppColors.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -215,19 +278,20 @@ fun FavoriteItem(joke: Joke, onDelete: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
+        colors = CardDefaults.cardColors(containerColor = AppColors.SoftOrange),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = joke.value,
                 modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
             IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Favorite, contentDescription = "Eliminar de favoritos", tint = Color.Red)
+                Icon(Icons.Default.Favorite, contentDescription = "Eliminar", tint = AppColors.Orange)
             }
         }
     }
