@@ -37,8 +37,7 @@ fun HomeScreen(viewModel: MainViewModel) {
         containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
             NavigationBar(
-                containerColor = AppColors.SoftBlue,
-                tonalElevation = 8.dp
+                containerColor = AppColors.White
             ) {
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Category, contentDescription = "Inicio") },
@@ -61,17 +60,17 @@ fun HomeScreen(viewModel: MainViewModel) {
             }
         }
     ) { paddingValues ->
-        // Columna principal que contiene la CABECERA FIJA y el CONTENIDO VARIABLE
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // --- CABECERA COMPARTIDA (LOGO) ---
+            // --- (LOGO) ---
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 16.dp), // Padding unificado para la cabecera
+                    .padding(vertical = 16.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -106,11 +105,10 @@ fun SearchScreenContent(viewModel: MainViewModel) {
     val isLoading by viewModel.isLoading.collectAsState()
     var expanded by remember { mutableStateOf(false) }
 
-    // Ya no necesitamos la imagen aquí, solo el contenido específico
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp) // Padding lateral solo para el contenido
+            .padding(horizontal = 16.dp)
     ) {
         // Selector de Categoría
         Text("Selecciona una Categoría:", style = MaterialTheme.typography.labelLarge)
@@ -142,8 +140,8 @@ fun SearchScreenContent(viewModel: MainViewModel) {
             Box(
                 modifier = Modifier
                     .matchParentSize()
+                    .clip(RoundedCornerShape(12.dp))
                     .clickable { expanded = true }
-                    .clip(RoundedCornerShape(12.dp)),
             )
 
             DropdownMenu(
