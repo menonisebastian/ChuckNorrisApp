@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import com.menonisebastian.chucknorrisapp.data.model.Joke
 import com.menonisebastian.chucknorrisapp.ui.MainViewModel
 import com.menonisebastian.chucknorrisapp.R
-import com.menonisebastian.chucknorrisapp.ui.theme.AppColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
