@@ -217,17 +217,10 @@ fun SearchScreenContent(viewModel: MainViewModel) {
                 )
             )
 
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .clip(RoundedCornerShape(12.dp))
-                    .clickable { expanded = true }
-            )
-
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                modifier = Modifier.fillMaxWidth(0.9f).background(MaterialTheme.colorScheme.background)
+                modifier = Modifier.background(MaterialTheme.colorScheme.background)
             ) {
                 categories.forEach { category ->
                     DropdownMenuItem(
@@ -237,6 +230,7 @@ fun SearchScreenContent(viewModel: MainViewModel) {
                             expanded = false
                         }
                     )
+                    HorizontalDivider()
                 }
             }
         }
