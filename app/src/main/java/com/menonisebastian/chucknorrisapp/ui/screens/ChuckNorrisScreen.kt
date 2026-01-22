@@ -78,7 +78,7 @@ fun HomeScreen(viewModel: MainViewModel) {
             confirmButton = {
                 Button(
                     onClick = { showDialog = false },
-                    colors = ButtonDefaults.buttonColors(containerColor = AppColors.Orange)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
                     Text("Cerrar")
                 }
@@ -90,7 +90,7 @@ fun HomeScreen(viewModel: MainViewModel) {
                     Text("Otro")
                 }
             },
-            containerColor = AppColors.White
+            containerColor = MaterialTheme.colorScheme.background,
         )
     }
 
@@ -106,8 +106,8 @@ fun HomeScreen(viewModel: MainViewModel) {
                         viewModel.fetchJoke() // Llama a la función para traer un chiste nuevo
                         showDialog = true     // Muestra el diálogo
                     },
-                    containerColor = AppColors.Orange,
-                    contentColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 ) {
                     Icon(Icons.Default.Shuffle, contentDescription = "Chiste Random")
                 }
@@ -115,7 +115,7 @@ fun HomeScreen(viewModel: MainViewModel) {
         },
         bottomBar = {
             NavigationBar(
-                containerColor = AppColors.White
+                containerColor = MaterialTheme.colorScheme.background,
             ) {
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Category, contentDescription = "Inicio") },
@@ -123,7 +123,7 @@ fun HomeScreen(viewModel: MainViewModel) {
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
                     colors = NavigationBarItemDefaults.colors(
-                        indicatorColor = AppColors.SoftOrange
+                        indicatorColor = MaterialTheme.colorScheme.secondaryContainer
                     )
                 )
                 NavigationBarItem(
@@ -132,7 +132,7 @@ fun HomeScreen(viewModel: MainViewModel) {
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
                     colors = NavigationBarItemDefaults.colors(
-                        indicatorColor = AppColors.SoftBlue
+                        indicatorColor = MaterialTheme.colorScheme.primaryContainer
                     )
                 )
             }
@@ -208,8 +208,8 @@ fun SearchScreenContent(viewModel: MainViewModel) {
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
-                    disabledContainerColor = AppColors.SoftBlue,
-                    disabledTextColor = AppColors.DarkBlue,
+                    disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    disabledTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     disabledLabelColor = MaterialTheme.colorScheme.onSurface,
                 )
             )
@@ -224,7 +224,7 @@ fun SearchScreenContent(viewModel: MainViewModel) {
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                modifier = Modifier.fillMaxWidth(0.9f).background(AppColors.White)
+                modifier = Modifier.fillMaxWidth(0.9f).background(MaterialTheme.colorScheme.background)
             ) {
                 categories.forEach { category ->
                     DropdownMenuItem(
@@ -245,7 +245,7 @@ fun SearchScreenContent(viewModel: MainViewModel) {
             text = if (selectedCategory != null) "Resultados (${categoryJokes.size})" else "Resultados",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = AppColors.Orange
+            color = MaterialTheme.colorScheme.onBackground
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -291,7 +291,7 @@ fun FavoritesScreenContent(viewModel: MainViewModel) {
             text = "Mis Favoritos (${favorites.size})",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
-            color = AppColors.DarkBlue
+            color = MaterialTheme.colorScheme.onBackground
         )
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
@@ -324,7 +324,7 @@ fun JokeItem(joke: Joke, onToggleFavorite: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = AppColors.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.inversePrimary),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
@@ -353,7 +353,7 @@ fun FavoriteItem(joke: Joke, onDelete: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = AppColors.SoftOrange),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
