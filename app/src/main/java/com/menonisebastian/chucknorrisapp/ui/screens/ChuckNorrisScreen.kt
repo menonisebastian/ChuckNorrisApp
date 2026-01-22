@@ -229,7 +229,9 @@ fun SearchScreenContent(viewModel: MainViewModel) {
                             expanded = false
                         }
                     )
-                    HorizontalDivider()
+                    if (category != categories.last()) {
+                        HorizontalDivider()
+                    }
                 }
             }
         }
